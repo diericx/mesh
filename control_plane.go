@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"net"
-
-	unsafe "unsafe"
 )
 
 func runControlPlane() {
@@ -33,15 +31,11 @@ func listen() {
 			continue
 		}
 
-		var msg Message
-
-		receivedMessage := buffer[:n]
-		if len(receivedMessage) != int(unsafe.Sizeof(msg)) {
-			fmt.Printf("Invalid message size: %v\n", err)
+		var msg UDPMessage
+		err = msg.Parse(buffer[:n])
+		if err != nil {
+			fmt.Printf("Error parsing message: %v\n", err)
 			continue
 		}
-
-		fmt.Println(string(receivedMessage[:32]))
-		fmt.Println(string(receivedMessage[32:]))
 	}
 }

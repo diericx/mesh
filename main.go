@@ -5,13 +5,6 @@ import (
 	"os"
 )
 
-type Message struct {
-	// String
-	endpoint [32]byte
-	// String
-	convId [16]byte
-}
-
 var LISTEN_ADDR string = "0.0.0.0:8080"
 
 func main() {

@@ -26,15 +26,12 @@ func send() {
 	}
 	defer conn.Close() // Close the connection when the main function exits
 
-	msg := Message{
-		endpoint: [32]byte{},
-		convId:   [16]byte{},
-	}
-	copy(msg.endpoint[:], "hello")
-	copy(msg.convId[:], "world")
+	var msg UDPMessage = UDPMessage{}
+	msg.SetEndpoint("hello")
+	msg.SetConvID("world")
 
 	// Send the message
-	_, err = conn.Write(append(msg.endpoint[:], msg.convId[:]...))
+	_, err = conn.Write(msg.Serialize())
 	if err != nil {
 		fmt.Println("Error sending message:", err)
 		os.Exit(1)
