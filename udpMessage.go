@@ -3,46 +3,41 @@ package main
 import (
 	"bytes"
 	"fmt"
-	unsafe "unsafe"
 )
 
-var endpointMaxLength = 32
-var convIdMaxLength = 16
+const endpointMaxLength = 32
+const convIdMaxLength = 16
 
 type UDPMessage struct {
-	// String
-	endpoint [32]byte
-	// String
-	convId [16]byte
+	endpoint string
+	convId   string
 }
 
-func (m *UDPMessage) SetEndpoint(v string) error {
-	if len(v) > 32 {
-		return fmt.Errorf("string too large")
+type serializedUDPMessage = [endpointMaxLength + convIdMaxLength]byte
+
+func (m *UDPMessage) Serialize() (serializedUDPMessage, error) {
+	var result serializedUDPMessage
+	if len(m.endpoint) > endpointMaxLength {
+		return result, fmt.Errorf("endpoint is too large, max size is %v", endpointMaxLength)
 	}
-	copy(m.endpoint[:], v)
-	return nil
-}
-
-func (m *UDPMessage) SetConvID(v string) error {
-	if len(v) > 16 {
-		return fmt.Errorf("string too large")
+	if len(m.convId) > convIdMaxLength {
+		return result, fmt.Errorf("convId is too large, max size is %v", convIdMaxLength)
 	}
-	copy(m.convId[:], v)
-	return nil
-}
 
-func (m *UDPMessage) Serialize() []byte {
-	return append(m.endpoint[:], m.convId[:]...)
+	copy(result[0:], m.endpoint)
+	copy(result[endpointMaxLength:], m.convId)
+
+	return result, nil
 }
 
 func (m *UDPMessage) Parse(b []byte) error {
-	inputBytesLength := int(unsafe.Sizeof(m))
-	if len(b) != inputBytesLength {
-		return fmt.Errorf("invalid message size: %v", inputBytesLength)
+	var _m serializedUDPMessage
+	if len(b) != len(_m) {
+		return fmt.Errorf("invalid message size: %v", len(_m))
 	}
 
-	copy(bytes.Trim(b[:32], "\x00"), m.endpoint[:])
-	copy(bytes.Trim(b[32:], "\x00"), m.convId[:])
+	m.endpoint = string(bytes.Trim(b[:endpointMaxLength], "\x00"))
+	m.convId = string(bytes.Trim(b[endpointMaxLength:endpointMaxLength+convIdMaxLength], "\x00"))
+
 	return nil
 }

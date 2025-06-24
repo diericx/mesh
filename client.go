@@ -26,12 +26,19 @@ func send() {
 	}
 	defer conn.Close() // Close the connection when the main function exits
 
-	var msg UDPMessage = UDPMessage{}
-	msg.SetEndpoint("hello")
-	msg.SetConvID("world")
+	var msg UDPMessage = UDPMessage{
+		endpoint: "hello",
+		convId:   "world",
+	}
+
+	msgSerialized, err := msg.Serialize()
+	if err != nil {
+		fmt.Println("Error serializing: ", err)
+		os.Exit(1)
+	}
 
 	// Send the message
-	_, err = conn.Write(msg.Serialize())
+	_, err = conn.Write(msgSerialized[:])
 	if err != nil {
 		fmt.Println("Error sending message:", err)
 		os.Exit(1)

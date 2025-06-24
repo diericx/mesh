@@ -37,5 +37,8 @@ func listen() {
 			fmt.Printf("Error parsing message: %v\n", err)
 			continue
 		}
+
+		fmt.Println(msg.endpoint)
+		fmt.Println(msg.convId)
 	}
 }
