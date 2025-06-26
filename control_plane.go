@@ -31,8 +31,7 @@ func listen() {
 			continue
 		}
 
-		var msg UDPMessage
-		err = msg.Parse(buffer[:n])
+		msg, err := ParseUDPMessage(buffer[:n])
 		if err != nil {
 			fmt.Printf("Error parsing message: %v\n", err)
 			continue

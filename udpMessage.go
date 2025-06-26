@@ -30,14 +30,15 @@ func (m *UDPMessage) Serialize() (serializedUDPMessage, error) {
 	return result, nil
 }
 
-func (m *UDPMessage) Parse(b []byte) error {
+func ParseUDPMessage(b []byte) (UDPMessage, error) {
+	var parsedMessage UDPMessage
 	var _m serializedUDPMessage
 	if len(b) != len(_m) {
-		return fmt.Errorf("invalid message size: %v", len(_m))
+		return parsedMessage, fmt.Errorf("invalid message size: %v", len(_m))
 	}
 
-	m.endpoint = string(bytes.Trim(b[:endpointMaxLength], "\x00"))
-	m.convId = string(bytes.Trim(b[endpointMaxLength:endpointMaxLength+convIdMaxLength], "\x00"))
+	parsedMessage.endpoint = string(bytes.Trim(b[:endpointMaxLength], "\x00"))
+	parsedMessage.convId = string(bytes.Trim(b[endpointMaxLength:endpointMaxLength+convIdMaxLength], "\x00"))
 
-	return nil
+	return parsedMessage, nil
 }
