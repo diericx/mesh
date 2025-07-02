@@ -6,11 +6,6 @@ import (
 	"os"
 )
 
-func runClient() {
-	fmt.Println("Sending a message to the control plane...")
-	send()
-}
-
 func send() {
 	destAddr, err := net.ResolveUDPAddr("udp4", "0.0.0.0:8080")
 	if err != nil {

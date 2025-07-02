@@ -5,13 +5,10 @@ import (
 	"net"
 )
 
-func runControlPlane() {
-	fmt.Println("Listening for messages...")
-	listen()
-}
+func udpAPIlistener(listenAddrStr string) {
+	fmt.Println("UDP listener started.")
 
-func listen() {
-	listenAddr, err := net.ResolveUDPAddr("udp4", LISTEN_ADDR)
+	listenAddr, err := net.ResolveUDPAddr("udp4", listenAddrStr)
 	if err != nil {
 		fmt.Printf("Invalid listen address: %v", err)
 		return
@@ -19,7 +16,7 @@ func listen() {
 
 	conn, err := net.ListenUDP("udp4", listenAddr)
 	if err != nil {
-		fmt.Printf("Error creating listen connection on %v: %v\n", LISTEN_ADDR, err)
+		fmt.Printf("Error creating listen connection on %v: %v\n", listenAddr, err)
 		return
 	}
 
