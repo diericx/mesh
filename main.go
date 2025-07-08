@@ -7,6 +7,7 @@ import (
 var (
 	udpListenAddrStr  string = "0.0.0.0:8081"
 	httpListenAddrStr string = "0.0.0.0:8080"
+	isController      bool   = false
 )
 
 var rootCmd = &cobra.Command{
@@ -21,8 +22,9 @@ var rootCmd = &cobra.Command{
 }
 
 func main() {
+	rootCmd.PersistentFlags().BoolVar(&isController, "controller", "", "whether or not this node is a controller")
 	rootCmd.PersistentFlags().StringVar(&udpListenAddrStr, "udp-addr", "", "address to listen for udp packets on (default is 0.0.0.0:8081)")
-	rootCmd.PersistentFlags().StringVar(&udpListenAddrStr, "http-addr", "", "address to listen for http packets on (default is 0.0.0.0:8080)")
+	rootCmd.PersistentFlags().StringVar(&httpListenAddrStr, "http-addr", "", "address to listen for http packets on (default is 0.0.0.0:8080)")
 
 	rootCmd.Execute()
 
