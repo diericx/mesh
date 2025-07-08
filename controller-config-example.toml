@@ -1,0 +1,5 @@
+name = "node1"
+externalIp = "xxx.xxx.xxx.xxx"
+
+[[networks]]
+subnet = "10.0.0.1/24"
