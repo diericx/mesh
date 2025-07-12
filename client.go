@@ -1,15 +1,16 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
 )
 
 func send() {
-	destAddr, err := net.ResolveUDPAddr("udp4", "0.0.0.0:8080")
+	destAddr, err := net.ResolveUDPAddr("udp4", "0.0.0.0:8081")
 	if err != nil {
-		fmt.Printf("Invalid listen address: %v", err)
+		fmt.Printf("Invalid dest address: %v", err)
 		return
 	}
 
@@ -22,18 +23,19 @@ func send() {
 	defer conn.Close() // Close the connection when the main function exits
 
 	var msg UDPRequest = UDPRequest{
-		endpoint: "hello",
-		reqId:    "world",
+		Endpoint: "hello",
+		ReqId:    "world",
 	}
 
-	msgSerialized, err := msg.Serialize()
+	msgSerialized, err := json.Marshal(msg)
 	if err != nil {
 		fmt.Println("Error serializing: ", err)
 		os.Exit(1)
 	}
+	fmt.Println(msgSerialized)
 
 	// Send the message
-	_, err = conn.Write(msgSerialized[:])
+	_, err = conn.Write(msgSerialized)
 	if err != nil {
 		fmt.Println("Error sending message:", err)
 		os.Exit(1)

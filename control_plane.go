@@ -1,12 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 )
 
 func udpAPIlistener(listenAddrStr string) {
-	fmt.Println("UDP listener started.")
+	fmt.Printf("UDP listener started on %s\n", listenAddrStr)
 
 	listenAddr, err := net.ResolveUDPAddr("udp4", listenAddrStr)
 	if err != nil {
@@ -28,13 +29,15 @@ func udpAPIlistener(listenAddrStr string) {
 			continue
 		}
 
-		msg, err := ParseUDPMessage(buffer[:n])
+		var req UDPRequest
+		err = json.Unmarshal(buffer[:n], &req)
 		if err != nil {
 			fmt.Printf("Error parsing message: %v\n", err)
 			continue
 		}
+		fmt.Println(buffer[:n])
 
-		fmt.Println(msg.endpoint)
-		fmt.Println(msg.reqId)
+		fmt.Println(req.Endpoint)
+		fmt.Println(req.ReqId)
 	}
 }
