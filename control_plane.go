@@ -35,6 +35,6 @@ func udpAPIlistener(listenAddrStr string) {
 		}
 
 		fmt.Println(msg.endpoint)
-		fmt.Println(msg.convId)
+		fmt.Println(msg.reqId)
 	}
 }

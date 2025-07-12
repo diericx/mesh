@@ -21,9 +21,9 @@ func send() {
 	}
 	defer conn.Close() // Close the connection when the main function exits
 
-	var msg UDPMessage = UDPMessage{
+	var msg UDPRequest = UDPRequest{
 		endpoint: "hello",
-		convId:   "world",
+		reqId:    "world",
 	}
 
 	msgSerialized, err := msg.Serialize()

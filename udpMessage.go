@@ -2,43 +2,55 @@ package main
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
 )
 
-const endpointMaxLength = 32
-const convIdMaxLength = 16
+// Sizes are in bytes
+const endpointSize = 32
+const reqIdSize = 16
 
-type UDPMessage struct {
-	endpoint string
-	convId   string
+type UDPRequest struct {
+	endpoint    string
+	reqId       string
+	contentSize uint16
+	content     string
 }
 
-type serializedUDPMessage = [endpointMaxLength + convIdMaxLength]byte
-
-func (m *UDPMessage) Serialize() (serializedUDPMessage, error) {
-	var result serializedUDPMessage
-	if len(m.endpoint) > endpointMaxLength {
-		return result, fmt.Errorf("endpoint is too large, max size is %v", endpointMaxLength)
-	}
-	if len(m.convId) > convIdMaxLength {
-		return result, fmt.Errorf("convId is too large, max size is %v", convIdMaxLength)
-	}
-
-	copy(result[0:], m.endpoint)
-	copy(result[endpointMaxLength:], m.convId)
-
-	return result, nil
+type UDPResponse struct {
+	endpoint    string
+	reqId       string
+	code        int
+	contentSize int
+	content     string
 }
 
-func ParseUDPMessage(b []byte) (UDPMessage, error) {
-	var parsedMessage UDPMessage
-	var _m serializedUDPMessage
-	if len(b) != len(_m) {
-		return parsedMessage, fmt.Errorf("invalid message size: %v", len(_m))
+func (m *UDPRequest) Serialize() ([]byte, error) {
+	var result [endpointSize + reqIdSize + 2]byte
+	if len(m.endpoint) > endpointSize {
+		return result[:], fmt.Errorf("endpoint is too large, max size is %v", endpointSize)
+	}
+	if len(m.reqId) > reqIdSize {
+		return result[:], fmt.Errorf("convId is too large, max size is %v", reqIdSize)
 	}
 
-	parsedMessage.endpoint = string(bytes.Trim(b[:endpointMaxLength], "\x00"))
-	parsedMessage.convId = string(bytes.Trim(b[endpointMaxLength:endpointMaxLength+convIdMaxLength], "\x00"))
+	copy(result[0:], m.endpoint[:])
+	copy(result[0+32:], m.reqId[:])
+	binary.BigEndian.PutUint16(result[0+32+16:], m.contentSize)
+
+	resultWithContent := append(result[:], []byte(m.content)...)
+
+	return resultWithContent, nil
+}
+
+func ParseUDPMessage(b []byte) (UDPRequest, error) {
+	var parsedMessage UDPRequest
+
+	parsedMessage.endpoint = string(bytes.Trim(b[:endpointSize], "\x00"))
+	parsedMessage.reqId = string(bytes.Trim(b[endpointSize:endpointSize+reqIdSize], "\x00"))
+	parsedMessage.contentSize = binary.BigEndian.Uint16(b[endpointSize+reqIdSize : endpointSize+reqIdSize+2])
+	fmt.Println(len(b))
+	parsedMessage.content = string(b[endpointSize+reqIdSize+2 : parsedMessage.contentSize-1])
 
 	return parsedMessage, nil
 }
