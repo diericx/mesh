@@ -11,9 +11,8 @@ type UDPRequest struct {
 }
 
 type UDPResponse struct {
-	endpoint    string
-	reqId       string
-	code        int
-	contentSize int
-	content     string
+	Endpoint string `json:"endpoint"`
+	ReqId    string `json:"reqId"`
+	Code     int    `json:"code"`
+	Content  string `json:"content"`
 }

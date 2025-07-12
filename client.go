@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-func send() {
-	destAddr, err := net.ResolveUDPAddr("udp4", "0.0.0.0:8081")
+func sendUDPRequest(destAddrStr string, req UDPRequest) {
+	destAddr, err := net.ResolveUDPAddr("udp4", destAddrStr)
 	if err != nil {
 		fmt.Printf("Invalid dest address: %v", err)
 		return
@@ -22,12 +22,7 @@ func send() {
 	}
 	defer conn.Close() // Close the connection when the main function exits
 
-	var msg UDPRequest = UDPRequest{
-		Endpoint: "hello",
-		ReqId:    "world",
-	}
-
-	msgSerialized, err := json.Marshal(msg)
+	msgSerialized, err := json.Marshal(req)
 	if err != nil {
 		fmt.Println("Error serializing: ", err)
 		os.Exit(1)

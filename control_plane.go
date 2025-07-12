@@ -35,7 +35,6 @@ func udpAPIlistener(listenAddrStr string) {
 			fmt.Printf("Error parsing message: %v\n", err)
 			continue
 		}
-		fmt.Println(buffer[:n])
 
 		fmt.Println(req.Endpoint)
 		fmt.Println(req.ReqId)
